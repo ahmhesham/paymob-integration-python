@@ -1,9 +1,19 @@
 import requests
 
+
+
+
+
+apiKey = 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2T1RRMU5USTFMQ0p1WVcxbElqb2lhVzVwZEdsaGJDSjkubWVXdEFaWjhLQ09GTVUtTlhfS0VOMldHZkRzT3RlM2dCcGdRaEd4T1hJMFRMVVh1YUt4Z0RBOVNpaXVPbXlSN0RVR3A3TXc4cWUtaWIzUzlCS2phNkE='
+
+
+
+
+
 class PaymobManager:
-    def getPaymentKey(self, amount, currency):
+    def getPaymentKey(self, amount, currency, integration_id):
         try:
-            authanticationToken = self._getAuthanticationToken()
+            authanticationToken = self._getAuthanticationToken(api_key=apiKey)
 
             orderId = self._getOrderId(
                 authanticationToken=authanticationToken,
@@ -16,6 +26,7 @@ class PaymobManager:
                 amount=str(100 * amount),
                 currency=currency,
                 orderId=str(orderId),
+                integration_id = integration_id
             )
             return paymentKey
         except Exception as e:
@@ -23,11 +34,11 @@ class PaymobManager:
             print(str(e))
             raise Exception()
 
-    def _getAuthanticationToken(self):
+    def _getAuthanticationToken(self, api_key):
         response = requests.post(
             "https://accept.paymob.com/api/auth/tokens",
             json={
-                "api_key": "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2T1RRMU5USTFMQ0p1WVcxbElqb2lhVzVwZEdsaGJDSjkubWVXdEFaWjhLQ09GTVUtTlhfS0VOMldHZkRzT3RlM2dCcGdRaEd4T1hJMFRMVVh1YUt4Z0RBOVNpaXVPbXlSN0RVR3A3TXc4cWUtaWIzUzlCS2phNkE=",
+                "api_key": api_key,
             }
         )
         print("auth token")
@@ -53,7 +64,7 @@ class PaymobManager:
         print("--------------------------")
         return response.json()["id"]
 
-    def _getPaymentKey(self, authanticationToken, orderId, amount, currency):
+    def _getPaymentKey(self, authanticationToken, orderId, amount, currency, integration_id):
         response = requests.post(
             "https://accept.paymob.com/api/acceptance/payment_keys",
             json={
@@ -62,7 +73,7 @@ class PaymobManager:
                 "order_id": orderId,
                 "amount_cents": amount,
                 "currency": currency,
-                "integration_id": 4410201,
+                "integration_id": integration_id,
                 "billing_data": {
                     "first_name": "Clifford", 
                     "last_name": "Nicolas", 
@@ -98,41 +109,15 @@ paymob_manager = PaymobManager()
 
 print()
 
-# Call the getPaymentKey method with the required arguments
-amount = 100
-currency = "EGP"
-payment_key = paymob_manager.getPaymentKey(amount, currency)
+# Call the getPaymentKey method with the required arguments , amount, currency
 
-# Print the payment key
-print(payment_key)
-
+integration_id = 00 #Your Payment Integration id to spicify what payment is it like (cards, or mobile wallet, etc..)
+amount = 100 # amount that you want the user to pay 
+currency = "EGP" #currency USD or EGP , etc..
+payment_key = paymob_manager.getPaymentKey(amount=amount, currency=currency, integration_id=integration_id)
 
 
-def getredirect_url(payment_key,wallet_num):
-    response = requests.post(
-        "https://accept.paymob.com/api/acceptance/payments/pay",
-        json={
-            "source": {
-                "identifier": f"{wallet_num}", 
-                "subtype": "WALLET"
-            },
-            "payment_token": payment_key  
-        }
-        )
-    print("redirect_url")
-    print(response.json()['iframe_redirection_url'])
+# for cards payments you can use your payment iframes and pass the payment key you have created.
 
-    print("---------------------------")
-    return response.json()['iframe_redirection_url']
-
-getredirect_url(payment_key=payment_key, wallet_num="01010101010")
-
-
-
-
-def get_callback(request):
-    if request.method == 'POST':
-        data = request.json()
-        data = request.Post.get('obj')
-
+# https://accept.paymobsolutions.com/api/acceptance/iframes/{{your_iframe_id}}?payment_token={{payment_key}}
 
