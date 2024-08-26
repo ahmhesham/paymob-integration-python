@@ -85,12 +85,12 @@ def processed_callback(request):
 
 
             
-                return redirect('course_list')
+                return redirect('')
 
             else:
                 # Handle failed payment
                 messages.error(request, 'Something went wrong. Please try again.')
-                return redirect('cart_detail')
+                return redirect('')
 
         else:
             print("HMAC validation failed")
