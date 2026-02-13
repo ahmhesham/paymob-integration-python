@@ -40,7 +40,7 @@ Example : ``https://accept.paymobsolutions.com/api/acceptance/iframes/{{your_ifr
 
 
 
-# you can visit  [paymob docs](https://docs.paymob.com/) for more info. 
+# you can visit  [paymob docs]([https://docs.paymob.com/](https://developers.paymob.com/paymob-docs/payments-and-features/payment-methods/mobile-wallets-egy-ksa)) for more info. 
 
 
   
